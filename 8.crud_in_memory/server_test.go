@@ -7,15 +7,18 @@ import (
 )
 
 func TestAppServer(t *testing.T) {
-	server := &PersonCrudServer{}
-
-	request, _ := http.NewRequest(http.MethodGet, "/", nil)
+	server := NewServer()
+	request := httptest.NewRequest(http.MethodGet, "/people/kaue", nil)
 	response := httptest.NewRecorder()
 
 	server.ServeHTTP(response, request)
-	got := response.Body.String()
 
-	if got != "Hello, world" {
-		t.Errorf("expected %s got %s", "Hello, world", got)
+	got := response.Body.String()
+	want := "Hello, world"
+
+	if got != want {
+		t.Errorf("expected %s (len: %d) got %s (len: %d)",
+			want, len(want),
+			got, len(got))
 	}
 }
