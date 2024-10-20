@@ -1,30 +1,27 @@
 package main
 
 import (
-	"crud_http/models"
+	"crud_http/stores"
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
-type PersonCrudServer struct{}
+func handlePeople(store stores.PersonStore) http.Handler {
+	return http.HandlerFunc(
+		func(w http.ResponseWriter, r *http.Request) {
+			name := r.PathValue("name")
+			person, found, error := store.GetByName(name)
 
-func handlePeople(w http.ResponseWriter, r *http.Request) {
-	person := r.PathValue("name")
-	var found models.Person
-	if person == "kaue" {
-		found = models.Person{
-			Name:    "kaue",
-			BornAt:  "02/06/2003",
-			Address: "rua sao vicente",
-		}
-	} else {
-		found = models.Person{
-			Name:    "Douglas Reis",
-			BornAt:  "02/07/2003",
-			Address: "rua cubatao",
-		}
-	}
-
-	jsonKaue, _ := json.Marshal(found)
-	w.Write(jsonKaue)
+			if !found {
+				fmt.Printf("Did not find person %s\n", name)
+				panic("todo")
+			}
+			if error != nil {
+				panic("todo")
+			}
+			jsonKaue, _ := json.Marshal(person)
+			w.Write(jsonKaue)
+		},
+	)
 }

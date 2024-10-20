@@ -1,9 +1,13 @@
 package main
 
-import "net/http"
+import (
+	"crud_http/stores"
+	"net/http"
+)
 
 func AddRoutes(
 	mux *http.ServeMux,
+	personStore *stores.PersonStore,
 ) {
-	mux.HandleFunc("/people/{name}", handlePeople)
+	mux.Handle("/people/{name}", handlePeople(*personStore))
 }

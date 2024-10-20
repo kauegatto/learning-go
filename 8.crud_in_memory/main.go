@@ -1,26 +1,33 @@
 package main
 
 import (
+	"crud_http/models"
+	"crud_http/stores"
 	"log"
 	"net/http"
 )
 
-func NewServer() http.Handler {
+func NewServer(
+	personStore *stores.PersonStore,
+) http.Handler {
 	mux := http.NewServeMux()
-	AddRoutes(mux)
+	AddRoutes(mux, personStore)
 	return mux
 }
 
 func main() {
-	// server := &PersonCrudServer{}
-	server := NewServer()
+	personStore := stores.NewPersonStore()
+	personStore.Upsert(models.Person{
+		Name:    "kaue",
+		BornAt:  "02/06/2003",
+		Address: "rua sao vicente",
+	})
+	personStore.Upsert(models.Person{
+		Name:    "douglas",
+		BornAt:  "02/07/2003",
+		Address: "rua cubatao",
+	})
+
+	server := NewServer(personStore)
 	log.Fatal(http.ListenAndServe(":8080", server))
 }
-
-/*
-NewServer is a big constructor that takes in all dependencies as arguments
-It returns an http.Handler if possible, which can be a dedicated type for more complex situations
-It usually configures its own muxer and calls out to routes.go
-
-
-*/
